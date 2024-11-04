@@ -81,17 +81,35 @@
 }
 
 
-  // Function to style each state (optional: you can modify colors or styles here)
-  function style(feature) {
-    return {
-      fillColor: '#99d8c9',
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
-    };
-  }
+// Define colors for each cause category
+const causeColors = {
+  "Making housing more accessible and affordable.": "#FFEDA0",
+  "Ensuring safe learning environments.": "#FED976",
+  "Tackling the cost of education and student loans.": "#FEB24C",
+  "Advancing equality and rights for LGBTQIA+ communities.": "#FD8D3C",
+  "Promoting mental health support and education.": "#FC4E2A",
+  "Improving access to health services.": "#E31A1C",
+  "Working towards racial equality and ending discrimination.": "#BD0026",
+  "Reducing waste and pollution in our environment.": "#800026",
+  "Ensuring healthy relationships with technology.": "#006837"
+};
+
+// Function to get color based on the cause for each state
+function getColor(cause) {
+  return causeColors[cause] || "#99d8c9";  // Default color if cause is not defined
+}
+
+// Function to style each state based on its top cause
+function style(feature) {
+  return {
+    fillColor: getColor(topCauses[feature.properties.name]),
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7
+  };
+}
 
   // Define hover interaction for each state
   function highlightFeature(e) {
