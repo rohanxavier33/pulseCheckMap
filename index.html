@@ -138,9 +138,9 @@ function style(feature) {
     });
   }
 
-  // Load GeoJSON for US states (ensure this path points to your GeoJSON file for US states)
+  // Load GeoJSON for US states
   var geojson;
-  fetch('usStates.json')  // Replace with your actual GeoJSON path
+  fetch('usStates.json')
     .then(response => response.json())
     .then(data => {
       geojson = L.geoJson(data, {
