@@ -85,15 +85,15 @@
 
 // Define colors for each cause category
 const causeColors = {
-  "Making housing more accessible and affordable.": "#58d68d",
-  "Ensuring safe learning environments.": "#f1948a",
-  "Tackling the cost of education and student loans.": "#1abc9c ",
-  "Advancing equality and rights for LGBTQIA+ communities.": "#fad7a0 ",
-  "Promoting mental health support and education.": "#5499c7",
-  "Improving access to health services.": "#E31A1C",
-  "Working towards racial equality and ending discrimination.": "#BD0026",
-  "Reducing waste and pollution in our environment.": "#145a32",
-  "Ensuring healthy relationships with technology.": "#b2babb"
+  "Making housing more accessible and affordable.": "#27BB31",
+"Ensuring safe learning environments.": "#FF4C22",
+"Tackling the cost of education and student loans.": "#FCCE2F",
+"Advancing equality and rights for LGBTQIA+ communities.": "#FF359C",
+"Promoting mental health support and education.": "#983AC9",
+"Improving access to health services.": "#332BAA",
+"Working towards racial equality and ending discrimination.": "#E3AFFF",
+"Reducing waste and pollution in our environment.": "#94E42F",
+"Ensuring healthy relationships with technology.": "#2FE4DA"
 };
 
 // Function to get color based on the cause for each state
@@ -156,31 +156,69 @@ function style(feature) {
         onEachFeature: onEachFeature
       }).addTo(map);
     });
-   // Add legend to the map
-L.control.addLegend = function (opts) {
-  var legend = L.control({ position: opts.position || 'bottomright' });
-  legend.onAdd = function () {
-    var div = L.DomUtil.create("div", "legend");
-    div.style.backgroundColor = "white"; // White background
-    div.style.padding = "10px";          // Padding inside the box
-    div.style.borderRadius = "5px";      // Rounded corners
-    div.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.2)"; // Soft shadow
-    div.style.border = "1px solid #ccc"; // Border color
+    // Add legend to the map
+  L.control.addLegend = function (opts) {
+    var legend = L.control({ position: opts.position || 'bottomright' });
+    legend.onAdd = function () {
+      var div = L.DomUtil.create("div", "legend");
+      div.style.backgroundColor = "white";
+      div.style.padding = "10px";
+      div.style.borderRadius = "5px";
+      div.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.2)";
+      div.style.border = "1px solid #ccc";
 
-    div.innerHTML = "<h2>Top Causes</h2>";
-    for (var cause in causeColors) {
-      div.innerHTML +=
-        '<i style="background:' + causeColors[cause] + '; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></i> ' +
-        cause + '<br>';
-    }
-    return div;
+      div.innerHTML = "<h2>Top Causes</h2>";
+      for (var cause in causeColors) {
+        // Wrap each cause item creation in a closure to preserve the value of `cause`
+        (function(cause) {
+          var item = document.createElement("div");
+          item.style.display = "flex";
+          item.style.alignItems = "center";
+          item.style.cursor = "pointer";
+          item.innerHTML =
+            '<i style="background:' + causeColors[cause] + '; width: 12px; height: 12px; display: inline-block; margin-right: 8px;"></i> ' +
+            cause;
+
+          // Event listeners for hovering and clicking on legend items
+          item.onmouseover = function () { highlightStatesByCause(cause); };
+          item.onmouseout = resetHighlightForAllStates;
+          item.onclick = function () { highlightStatesByCause(cause); };
+
+          div.appendChild(item);
+        })(cause);
+      }
+      return div;
+    };
+    return legend;
   };
-  return legend;
-};
 
-// Initialize and add the legend
-L.control.addLegend({ position: 'bottomright' }).addTo(map);
+  // Function to highlight states by cause
+  function highlightStatesByCause(selectedCause) {
+    geojson.eachLayer(function (layer) {
+      var stateData = topCauses[layer.feature.properties.name];
+      if (stateData && stateData.cause === selectedCause) {
+        layer.setStyle({
+          weight: 5,
+          color: '#666',
+          fillOpacity: 0.7
+        });
+      } else {
+        layer.setStyle({
+          fillOpacity: 0.3
+        });
+      }
+    });
+  }
 
+  // Function to reset all states' highlights
+  function resetHighlightForAllStates() {
+    geojson.eachLayer(function (layer) {
+      geojson.resetStyle(layer);
+    });
+  }
+
+  // Initialize and add the legend
+  L.control.addLegend({ position: 'bottomright' }).addTo(map);
 </script>
 
 </body>
